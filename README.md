@@ -18,7 +18,20 @@ Install dependencies (requires internet access):
 npm install
 ```
 
-Generate the Prisma client and migrate the database:
+Generate the Prisma client:
+
+```bash
+npx prisma generate
+```
+
+If your Prisma schema changes and you need a migration, create one without
+applying it to the database:
+
+```bash
+npx prisma migrate dev --create-only --name <migration-name>
+```
+
+You can then apply pending migrations when running locally:
 
 ```bash
 npx prisma migrate dev
