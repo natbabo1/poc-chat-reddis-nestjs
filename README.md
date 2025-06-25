@@ -43,7 +43,7 @@ Run the development server:
 npm run start:dev
 ```
 
-Environment variables can be configured in a `.env` file. See `prisma/schema.prisma` for the `DATABASE_URL`.
+Environment variables can be configured in a `.env` file. A sample is provided in `.env.example`. See `prisma/schema.prisma` for the `DATABASE_URL`.
 
 The WebSocket gateway can scale horizontally when Redis is available. Set the
 `REDIS_URL` environment variable (defaults to `redis://localhost:6379`) to
