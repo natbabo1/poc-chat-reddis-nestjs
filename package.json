@@ -16,8 +16,11 @@
     "@nestjs/common": "latest",
     "@nestjs/core": "latest",
     "@nestjs/platform-express": "latest",
+    "@nestjs/platform-socket.io": "^11.1.3",
     "@nestjs/websockets": "latest",
     "@prisma/client": "^6.10.1",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "redis": "^5.5.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",
     "socket.io": "^4.8.1"
