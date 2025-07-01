@@ -13,15 +13,34 @@ model User {
   name             String?
   messagesSent     Message[] @relation("messagesSent")
   messagesReceived Message[] @relation("messagesReceived")
+  groups    GroupMember[]
 }
 
 model Message {
   id         Int      @id @default(autoincrement())
   sender     User     @relation("messagesSent", fields: [senderId], references: [id])
   senderId   Int
-  receiver   User     @relation("messagesReceived", fields: [receiverId], references: [id])
-  receiverId Int
+  receiver   User?    @relation("messagesReceived", fields: [receiverId], references: [id])
+  receiverId Int?
+  group      Group?   @relation(fields: [groupId], references: [id])
+  groupId    Int?
   content    String
   fileUrl    String?
   createdAt  DateTime @default(now())
+}
+
+model Group {
+  id      Int           @id @default(autoincrement())
+  name    String
+  members GroupMember[]
+  messages Message[]
+}
+
+model GroupMember {
+  group   Group @relation(fields: [groupId], references: [id])
+  groupId Int
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int
+
+  @@id([groupId, userId])
 }
