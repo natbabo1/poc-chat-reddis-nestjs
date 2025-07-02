@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nest start",
+    "start": "nest start --watch",
     "start:dev": "ts-node-dev --respawn src/main.ts",
     "migrate:dev": "npx prisma migrate dev",
     "build": "tsc -p tsconfig.build.json"
@@ -22,6 +22,7 @@
     "@nestjs/websockets": "latest",
     "@prisma/client": "^6.10.1",
     "@socket.io/redis-adapter": "^8.3.0",
+    "class-validator": "^0.14.2",
     "redis": "^5.5.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",

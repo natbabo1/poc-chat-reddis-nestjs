@@ -7,40 +7,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RoomType {
+  ONE_TO_ONE
+  GROUP
+}
+
+enum Role {
+  PARTICIPANT
+  ADMIN
+}
+
+enum MessageType {
+  TEXT
+  FILE
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
 model User {
-  id               Int       @id @default(autoincrement())
-  email            String    @unique
-  name             String?
-  messagesSent     Message[] @relation("messagesSent")
-  messagesReceived Message[] @relation("messagesReceived")
-  groups    GroupMember[]
+  id       String       @id
+  username String       @unique
+  rooms    RoomMember[]
+  messages Message[]    @relation("SentMessages")
+}
+
+model Room {
+  id            String       @id @default(uuid())
+  type          RoomType     @default(ONE_TO_ONE)
+  members       RoomMember[]
+  messages      Message[]    @relation("Messages")
+  lastMessage   Message?     @relation("LastMessage", fields: [lastMessageId], references: [id])
+  lastMessageId String?
+  createdAt     DateTime     @default(now())
+}
+
+model RoomMember {
+  roomId String
+  userId String
+  role   Role   @default(PARTICIPANT)
+
+  room Room @relation(fields: [roomId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([roomId, userId]) // composite PK
 }
 
 model Message {
-  id         Int      @id @default(autoincrement())
-  sender     User     @relation("messagesSent", fields: [senderId], references: [id])
-  senderId   Int
-  receiver   User?    @relation("messagesReceived", fields: [receiverId], references: [id])
-  receiverId Int?
-  group      Group?   @relation(fields: [groupId], references: [id])
-  groupId    Int?
-  content    String
-  fileUrl    String?
-  createdAt  DateTime @default(now())
-}
+  id                String        @id @default(cuid())
+  room              Room          @relation("Messages", fields: [roomId], references: [id])
+  roomLatestMessage Room[]        @relation("LastMessage")
+  roomId            String
+  sender            User          @relation("SentMessages", fields: [senderId], references: [id])
+  senderId          String
+  type              MessageType
+  content           Json
+  status            MessageStatus @default(SENT)
+  createdAt         DateTime      @default(now())
 
-model Group {
-  id      Int           @id @default(autoincrement())
-  name    String
-  members GroupMember[]
-  messages Message[]
-}
-
-model GroupMember {
-  group   Group @relation(fields: [groupId], references: [id])
-  groupId Int
-  user    User  @relation(fields: [userId], references: [id])
-  userId  Int
-
-  @@id([groupId, userId])
+  @@index([roomId, createdAt])
 }
