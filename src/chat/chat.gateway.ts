@@ -14,4 +14,16 @@ export class ChatGateway {
     const message = await this.chatService.createMessage(data.senderId, data.receiverId, data.content);
     this.server.emit(`message_${data.receiverId}`, message);
   }
+
+  @SubscribeMessage('groupMessage')
+  async handleGroupMessage(@MessageBody() data: { senderId: number; groupId: number; content: string }) {
+    const message = await this.chatService.createGroupMessage(data.senderId, data.groupId, data.content);
+    this.server.emit(`group_${data.groupId}`, message);
+  }
+
+  @SubscribeMessage('createGroup')
+  async handleCreateGroup(@MessageBody() data: { name: string; memberIds: number[] }) {
+    const group = await this.chatService.createGroup(data.name, data.memberIds);
+    this.server.emit('groupCreated', group);
+  }
 }

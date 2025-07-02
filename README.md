@@ -5,7 +5,7 @@ This project is a skeleton for a chat application built with NestJS, PostgreSQL 
 ## Features
 
 - One to one chat
-- Ready for group chats in the future
+- Group chat support
 - Fetch the last message between users
 - File sending support (stores file URL)
 - Designed for up to 10k concurrent users
