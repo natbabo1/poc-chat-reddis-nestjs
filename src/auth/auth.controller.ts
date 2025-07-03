@@ -1,0 +1,18 @@
+import { Body, Controller, Post, BadRequestException } from "@nestjs/common";
+import { TokenService } from "./token.service";
+
+@Controller("auth")
+export class AuthController {
+  constructor(private readonly tokens: TokenService) {}
+
+  @Post("exchange")
+  exchange(@Body("extToken") extToken?: string) {
+    if (!extToken) throw new BadRequestException("extToken missing");
+
+    const hisUser = this.tokens.verifyHis(extToken);
+    // TODO: Optionally look up / create user in DB here
+
+    const appToken = this.tokens.issueAppToken(hisUser);
+    return { appToken };
+  }
+}

@@ -1,57 +1,44 @@
-import { Injectable } from "@nestjs/common";
+// src/chat/chat.service.ts
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { SendMessageDto } from "./chat.dto";
 
 @Injectable()
 export class ChatService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  /* ---------- membership ---------- */
+  /** Get the private room between two users, or create it atomically. */
+  async getOrCreatePrivateRoom(userA: string, userB: string) {
+    if (userA === userB) {
+      throw new BadRequestException("Cannot create private chat with yourself");
+    }
 
-  /** returns true if user already in room */
-  async addMember(userId: string, roomId: string) {
-    await this.prisma.roomMember.upsert({
-      where: { roomId_userId: { roomId, userId } },
-      update: {},
-      create: { roomId, userId },
+    /* 1. Create deterministic pairKey ("smaller#larger") */
+    const [first, second] = userA < userB ? [userA, userB] : [userB, userA];
+    const pairKey = `${first}#${second}`;
+
+    /* 2. Try fast path first */
+    const existing = await this.prisma.room.findUnique({
+      where: { pairKey },
     });
-  }
+    if (existing) return existing;
 
-  async getRoomsForUser(userId: string) {
-    return this.prisma.room.findMany({
-      where: { members: { some: { userId } } },
-      include: { lastMessage: true },
-    });
-  }
+    /* 3. Create inside a transaction to avoid race conditions */
+    return this.prisma.$transaction(async (tx) => {
+      // Somebody else might have created it a millisecond ago
+      const again = await tx.room.findUnique({ where: { pairKey } });
+      if (again) return again;
 
-  /* ---------- messages ---------- */
-
-  async createMessage(senderId: string, dto: SendMessageDto) {
-    const message = await this.prisma.message.create({
-      data: {
-        roomId: dto.roomId,
-        senderId,
-        type: dto.type,
-        content:
-          dto.type === "TEXT" ? { text: dto.text } : { fileMeta: dto.fileMeta },
-      },
-    });
-
-    // update pointer for "last message"
-    await this.prisma.room.update({
-      where: { id: dto.roomId },
-      data: { lastMessageId: message.id },
-    });
-
-    return message;
-  }
-
-  async getHistory(roomId: string, cursor?: string, limit = 50) {
-    return this.prisma.message.findMany({
-      where: { roomId },
-      take: limit,
-      ...(cursor && { cursor: { id: cursor }, skip: 1 }),
-      orderBy: { createdAt: "desc" },
+      return tx.room.create({
+        data: {
+          type: "ONE_TO_ONE",
+          pairKey,
+          members: {
+            createMany: {
+              data: [{ userId: userA }, { userId: userB }],
+            },
+          },
+        },
+      });
     });
   }
 }

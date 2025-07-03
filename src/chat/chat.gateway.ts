@@ -3,32 +3,56 @@ import {
   WebSocketServer,
   SubscribeMessage,
   MessageBody,
-  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
   ConnectedSocket,
   WsException,
 } from "@nestjs/websockets";
-import { ChatService } from "./chat.service";
+import { ChatService } from "./chat-ws.service";
 import { Server, Socket } from "socket.io";
-import { Logger } from "@nestjs/common";
+import { Inject, Logger, UseGuards } from "@nestjs/common";
 import { SendMessageDto } from "./chat.dto";
+import { WsJwtGuard } from "src/guards/ws-jwt.guard";
+import * as jwt from "jsonwebtoken";
+import tokenConfig from "src/config/token.config";
+import { ConfigType } from "@nestjs/config";
 
 @WebSocketGateway({ namespace: "chat" })
+@UseGuards(WsJwtGuard)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly log = new Logger(ChatGateway.name);
+  private readonly appJwtSecretKey: string;
+
   @WebSocketServer() server: Server;
 
-  constructor(private readonly chat: ChatService) {}
+  constructor(
+    @Inject(tokenConfig.KEY) tokenConf: ConfigType<typeof tokenConfig>,
+    private readonly chat: ChatService
+  ) {}
 
   /* ---------- lifecycle ---------- */
+
+  afterInit() {
+    // runs once when the gateway boots
+    this.server.use((socket: Socket, next) => {
+      const token = socket.handshake.auth?.token;
+      if (!token) return next(new Error("No token"));
+
+      try {
+        socket.data.user = jwt.verify(token, this.appJwtSecretKey!);
+        next();
+      } catch {
+        next(new Error("Invalid token"));
+      }
+    });
+  }
 
   async handleConnection(client: Socket) {
     const { user } = client.data; // set by guard
     this.log.debug(`+ ${user?.id} ${client.id}`);
 
     // auto-join all rooms you’re a member of
-    const rooms = await this.chat.getRoomsForUser(user?.id);
+    const rooms = await this.chat.getRoomsForUser(user.id);
     rooms.forEach((r) => client.join(r.id));
     client.emit("rooms", rooms); // send list on connect
   }

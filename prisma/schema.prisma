@@ -29,20 +29,26 @@ enum MessageStatus {
 }
 
 model User {
-  id       String       @id
-  username String       @unique
-  rooms    RoomMember[]
-  messages Message[]    @relation("SentMessages")
+  id        String       @id
+  email     String       @unique
+  name      String
+  avatarUrl String?
+  createdAt DateTime     @default(now())
+  rooms     RoomMember[]
+  messages  Message[]    @relation("SentMessages")
 }
 
 model Room {
   id            String       @id @default(uuid())
   type          RoomType     @default(ONE_TO_ONE)
+  pairKey       String?      @unique
   members       RoomMember[]
   messages      Message[]    @relation("Messages")
   lastMessage   Message?     @relation("LastMessage", fields: [lastMessageId], references: [id])
   lastMessageId String?
   createdAt     DateTime     @default(now())
+
+  @@index([type, pairKey])
 }
 
 model RoomMember {
