@@ -1,5 +1,12 @@
-import { Body, Controller, Post, BadRequestException } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Post,
+  BadRequestException,
+  UseGuards,
+} from "@nestjs/common";
 import { TokenService } from "./token.service";
+import { AppJwtGuard } from "src/guards/app-jwt.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -11,6 +18,8 @@ export class AuthController {
 
     const hisUser = this.tokens.verifyHis(extToken);
     // TODO: Optionally look up / create user in DB here
+
+    console.log(hisUser);
 
     const appToken = this.tokens.issueAppToken(hisUser);
     return { appToken };

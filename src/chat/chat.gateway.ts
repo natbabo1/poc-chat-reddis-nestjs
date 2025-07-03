@@ -8,7 +8,7 @@ import {
   ConnectedSocket,
   WsException,
 } from "@nestjs/websockets";
-import { ChatService } from "./chat-ws.service";
+import { ChatWsService } from "./chat-ws.service";
 import { Server, Socket } from "socket.io";
 import { Inject, Logger, UseGuards } from "@nestjs/common";
 import { SendMessageDto } from "./chat.dto";
@@ -27,8 +27,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
     @Inject(tokenConfig.KEY) tokenConf: ConfigType<typeof tokenConfig>,
-    private readonly chat: ChatService
-  ) {}
+    private readonly chat: ChatWsService
+  ) {
+    this.appJwtSecretKey = tokenConf.jwtPrivateKey;
+  }
 
   /* ---------- lifecycle ---------- */
 

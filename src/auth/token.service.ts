@@ -24,7 +24,7 @@ export class TokenService {
   ) {
     this.hisSecretKey = hisConf.jwtPrivateKey;
     this.appJwtSecretKey = tokenConf.jwtPrivateKey;
-    this.appJwtExpires = tokenConf.jwtPrivateKey as StringValue;
+    this.appJwtExpires = tokenConf.jwtExpires as StringValue;
   }
 
   verifyHis(token: string): HisPayload {
@@ -33,7 +33,7 @@ export class TokenService {
 
   issueAppToken(user: HisPayload) {
     return jwt.sign(
-      { sub: user.sub, email: user.email, name: user.name },
+      { id: user.sub, email: user.email, name: user.name },
       this.appJwtSecretKey,
       { expiresIn: this.appJwtExpires }
     );
