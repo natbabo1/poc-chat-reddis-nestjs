@@ -1,6 +1,7 @@
-import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
-import * as jwt from "jsonwebtoken";
-import { Socket } from "socket.io";
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
+import { Socket } from 'socket.io';
+import { AppTokenPayload } from 'src/auth/token.service';
 
 @Injectable()
 export class AppJwtGuard implements CanActivate {
@@ -8,24 +9,21 @@ export class AppJwtGuard implements CanActivate {
 
   canActivate(ctx: ExecutionContext) {
     // ---------- HTTP ----------
-    if (ctx.getType() === "http") {
+    if (ctx.getType() === 'http') {
       const req = ctx.switchToHttp().getRequest();
-      const token = req.headers.authorization?.split(" ")[1];
-      return this.attach(token, (user) => (req.user = user));
+      const token = req.headers.authorization?.split(' ')[1];
+      return this.attach(token, user => (req.user = user));
     }
 
     // ---------- WebSocket ----------
     const client = ctx.switchToWs().getClient<Socket>();
-    return this.attach(
-      client.handshake.auth?.token,
-      (user) => (client.data.user = user),
-    );
+    return this.attach(client.handshake.auth?.token, user => (client.data.user = user));
   }
 
-  private attach(raw: string | undefined, inject: (u: any) => void) {
+  private attach(raw: string | undefined, inject: (u: AppTokenPayload) => void) {
     if (!raw) return false;
     try {
-      const user = jwt.verify(raw, this.secret);
+      const user = jwt.verify(raw, this.secret) as AppTokenPayload;
       inject(user);
       return true;
     } catch {

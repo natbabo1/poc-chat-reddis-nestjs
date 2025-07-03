@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+
+  // ESLint will fix both *style* (via prettier plugin) and *code* issues
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  }
+}

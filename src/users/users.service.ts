@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +18,7 @@ export class UsersService {
         email: true, // include or omit fields as you need
         avatarUrl: true,
       },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     });
   }
 }

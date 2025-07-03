@@ -4,6 +4,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import prettierOptions from './prettier.config.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -25,7 +26,7 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules, // base TS rules
       ...prettierConfig.rules, // turn off formatting wars
-      "prettier/prettier": "error",
+      "prettier/prettier": ['error', prettierOptions],
     },
   },
 ];

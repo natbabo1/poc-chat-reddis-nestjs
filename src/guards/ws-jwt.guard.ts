@@ -1,7 +1,7 @@
 // auth/ws-jwt.guard.ts
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Socket } from "socket.io";
-import * as jwt from "jsonwebtoken";
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Socket } from 'socket.io';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {

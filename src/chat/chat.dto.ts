@@ -1,8 +1,8 @@
-import { IsUUID, IsIn, IsOptional, IsString } from "class-validator";
+import { IsUUID, IsIn, IsOptional, IsString } from 'class-validator';
 
 export class SendMessageDto {
   @IsUUID() roomId: string;
-  @IsIn(["TEXT", "FILE"]) type: "TEXT" | "FILE";
+  @IsIn(['TEXT', 'FILE']) type: 'TEXT' | 'FILE';
   @IsOptional() @IsString() text?: string; // TEXT
   @IsOptional() fileMeta?: {
     // FILE

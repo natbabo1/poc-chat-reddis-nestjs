@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { IoAdapter } from "@nestjs/platform-socket.io";
-import { ServerOptions } from "socket.io";
-import { createClient } from "redis";
-import { createAdapter } from "@socket.io/redis-adapter";
+import { Injectable } from '@nestjs/common';
+
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import { ServerOptions } from 'socket.io';
+import { createClient } from 'redis';
+import { createAdapter } from '@socket.io/redis-adapter';
 
 @Injectable()
 export class RedisIoAdapter extends IoAdapter {
@@ -18,7 +18,7 @@ export class RedisIoAdapter extends IoAdapter {
     this.adapterConstructor = createAdapter(pubClient, subClient);
   }
 
-  createIOServer(port: number, options?: ServerOptions): any {
+  createIOServer(port: number, options?: ServerOptions) {
     const server = super.createIOServer(port, options);
     server.adapter(this.adapterConstructor);
     return server;

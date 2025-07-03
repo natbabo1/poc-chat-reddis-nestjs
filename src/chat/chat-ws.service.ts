@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { SendMessageDto } from "./chat.dto";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { SendMessageDto } from './chat.dto';
 
 @Injectable()
 export class ChatWsService {
@@ -32,8 +32,7 @@ export class ChatWsService {
         roomId: dto.roomId,
         senderId,
         type: dto.type,
-        content:
-          dto.type === "TEXT" ? { text: dto.text } : { fileMeta: dto.fileMeta },
+        content: dto.type === 'TEXT' ? { text: dto.text } : { fileMeta: dto.fileMeta },
       },
     });
 
@@ -51,7 +50,7 @@ export class ChatWsService {
       where: { roomId },
       take: limit,
       ...(cursor && { cursor: { id: cursor }, skip: 1 }),
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

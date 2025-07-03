@@ -1,15 +1,20 @@
-import * as jwt from "jsonwebtoken";
-import { Inject, Injectable } from "@nestjs/common";
-import hisConfig from "src/config/his.config";
-import { ConfigType } from "@nestjs/config";
-import tokenConfig from "src/config/token.config";
-import type { StringValue } from "ms";
+import * as jwt from 'jsonwebtoken';
+import { Inject, Injectable } from '@nestjs/common';
+import hisConfig from 'src/config/his.config';
+import { ConfigType } from '@nestjs/config';
+import tokenConfig from 'src/config/token.config';
+import type { StringValue } from 'ms';
 
 export interface HisPayload {
   sub: string;
   email: string;
   name?: string;
   // …anything else the upstream system puts in the token
+}
+
+export interface AppTokenPayload {
+  id: string;
+  [k: string]: string;
 }
 
 @Injectable()
@@ -32,10 +37,8 @@ export class TokenService {
   }
 
   issueAppToken(user: HisPayload) {
-    return jwt.sign(
-      { id: user.sub, email: user.email, name: user.name },
-      this.appJwtSecretKey,
-      { expiresIn: this.appJwtExpires },
-    );
+    return jwt.sign({ id: user.sub, email: user.email, name: user.name }, this.appJwtSecretKey, {
+      expiresIn: this.appJwtExpires,
+    });
   }
 }
