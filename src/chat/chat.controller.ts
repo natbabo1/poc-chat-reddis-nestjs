@@ -10,7 +10,7 @@ import { AppJwtGuard } from "src/guards/app-jwt.guard";
 export class ChatController {
   constructor(
     private readonly chatService: ChatService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
   ) {}
 
   @Get("people")
@@ -23,7 +23,7 @@ export class ChatController {
   async open(@Body() dto: { targetUserId: string }, @CurrentUser() me: any) {
     const room = await this.chatService.getOrCreatePrivateRoom(
       me.id,
-      dto.targetUserId
+      dto.targetUserId,
     );
     return { roomId: room.id };
   }

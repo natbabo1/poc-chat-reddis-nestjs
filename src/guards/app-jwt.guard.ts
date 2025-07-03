@@ -18,7 +18,7 @@ export class AppJwtGuard implements CanActivate {
     const client = ctx.switchToWs().getClient<Socket>();
     return this.attach(
       client.handshake.auth?.token,
-      (user) => (client.data.user = user)
+      (user) => (client.data.user = user),
     );
   }
 

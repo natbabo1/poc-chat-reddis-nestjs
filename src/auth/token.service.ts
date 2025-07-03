@@ -20,7 +20,7 @@ export class TokenService {
 
   constructor(
     @Inject(hisConfig.KEY) hisConf: ConfigType<typeof hisConfig>,
-    @Inject(tokenConfig.KEY) tokenConf: ConfigType<typeof tokenConfig>
+    @Inject(tokenConfig.KEY) tokenConf: ConfigType<typeof tokenConfig>,
   ) {
     this.hisSecretKey = hisConf.jwtPrivateKey;
     this.appJwtSecretKey = tokenConf.jwtPrivateKey;
@@ -35,7 +35,7 @@ export class TokenService {
     return jwt.sign(
       { id: user.sub, email: user.email, name: user.name },
       this.appJwtSecretKey,
-      { expiresIn: this.appJwtExpires }
+      { expiresIn: this.appJwtExpires },
     );
   }
 }

@@ -27,7 +27,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
     @Inject(tokenConfig.KEY) tokenConf: ConfigType<typeof tokenConfig>,
-    private readonly chat: ChatWsService
+    private readonly chat: ChatWsService,
   ) {
     this.appJwtSecretKey = tokenConf.jwtPrivateKey;
   }
@@ -69,7 +69,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("join")
   async onJoin(
     @ConnectedSocket() client: Socket,
-    @MessageBody() roomId: string
+    @MessageBody() roomId: string,
   ) {
     await this.chat.addMember(client.data.user.id, roomId);
     client.join(roomId);
@@ -79,7 +79,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("send")
   async onSend(
     @ConnectedSocket() client: Socket,
-    @MessageBody() dto: SendMessageDto
+    @MessageBody() dto: SendMessageDto,
   ) {
     if (dto.type === "TEXT" && !dto.text?.trim()) {
       throw new WsException("Empty text");
@@ -97,7 +97,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       roomId,
       cursor,
       limit,
-    }: { roomId: string; cursor?: string; limit?: number }
+    }: { roomId: string; cursor?: string; limit?: number },
   ) {
     return this.chat.getHistory(roomId, cursor, limit);
   }

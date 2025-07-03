@@ -21,5 +21,5 @@ export const CurrentUser = createParamDecorator(
     }
 
     return null;
-  }
+  },
 );

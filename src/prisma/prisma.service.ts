@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Injectable, OnModuleInit, INestApplication } from "@nestjs/common";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -12,7 +12,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     // "beforeExit" event to be inferred as `never`. Casting `this` to `any`
     // avoids the compilation error while keeping the intended behavior.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this as any).$on('beforeExit', async () => {
+    (this as any).$on("beforeExit", async () => {
       await app.close();
     });
   }

@@ -17,7 +17,7 @@ async function bootstrap() {
   await app.listen(appPort);
 
   console.log(
-    `🚀 Restful application is running on: http://localhost:${appPort}`
+    `🚀 Restful application is running on: http://localhost:${appPort}`,
   );
 }
 bootstrap();
